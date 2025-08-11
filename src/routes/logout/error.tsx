@@ -1,13 +1,24 @@
-import { A } from '@solidjs/router';
+import { A, useSearchParams } from '@solidjs/router';
 
 // noinspection JSUnusedGlobalSymbols
-export default function NotFound() {
+/**
+ * Displays a user-friendly error page for failed logout attempts.
+ *
+ * This page is typically shown when a security check fails during the logout
+ * process. The most common cause is a Cross-Site Request Forgery (CSRF)
+ * protection failure, where a 'state' parameter from the identity provider
+ * does not match the one stored securely in the user's session.
+ */
+export default function LogoutErrorPage() {
+  const [searchParams] = useSearchParams();
+  const reason = () => searchParams.reason || 'An unknown error occurred.';
+
   return (
     <main class="grid flex-1 place-items-center bg-white px-6 py-24 sm:py-32 lg:px-8">
       <div class="text-center">
-        <div class="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100">
+        <div class="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-red-100">
           <svg
-            class="h-8 w-8 text-gray-600"
+            class="h-8 w-8 text-red-600"
             fill="none"
             viewBox="0 0 24 24"
             stroke-width="1.5"
@@ -16,15 +27,15 @@ export default function NotFound() {
             <path
               stroke-linecap="round"
               stroke-linejoin="round"
-              d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5.25h.008v.008H12v-.008z"
+              d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z"
             />
           </svg>
         </div>
         <h1 class="text-5xl font-semibold tracking-tight text-balance text-gray-900 sm:text-7xl">
-          Page not found
+          Logout unsuccessful
         </h1>
         <p class="mt-6 text-lg font-medium text-pretty text-gray-500 sm:text-xl/8">
-          Sorry, we couldn't find the page you're looking for.
+          {reason()}
         </p>
         <div class="mt-10 flex items-center justify-center gap-x-6">
           <A
