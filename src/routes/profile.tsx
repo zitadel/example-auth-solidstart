@@ -1,23 +1,27 @@
-import { createAsync, redirect } from '@solidjs/router';
+import { createAsync, redirect, query } from '@solidjs/router';
 import { getSession } from '@auth/solid-start';
 import { authOptions } from '~/lib/auth';
 import { Header } from '~/components/Header';
 import { Footer } from '~/components/Footer';
-import { Show, Suspense } from 'solid-js';
+import { Show } from 'solid-js';
 import { getRequestEvent } from 'solid-js/web';
+
+const getSessionData = query(async function () {
+  'use server';
+  const event = getRequestEvent();
+  if (!event) throw redirect('/api/auth/signin');
+
+  const session = await getSession(event.request, authOptions);
+  if (!session) {
+    throw redirect('/api/auth/signin');
+  }
+
+  return session;
+}, 'session-data');
 
 // noinspection JSUnusedGlobalSymbols
 export default function ProfilePage() {
-  const session = createAsync(async () => {
-    const event = getRequestEvent();
-
-    const sessionData = await getSession(event!.request, authOptions);
-
-    if (!sessionData) {
-      throw redirect('/api/auth/signin/zitadel');
-    }
-    return sessionData;
-  });
+  const session = createAsync(() => getSessionData());
 
   return (
     <div class="flex min-h-screen flex-col bg-gray-50">
@@ -57,13 +61,11 @@ export default function ProfilePage() {
               Below is the authentication data stored in your session:
             </p>
             <div class="overflow-x-auto rounded-lg bg-gray-900 p-6">
-              <Suspense fallback={<div>Loading...</div>}>
-                <Show when={session()}>
-                  <pre class="font-mono text-sm leading-relaxed text-green-400">
-                    {JSON.stringify(session(), null, 2)}
-                  </pre>
-                </Show>
-              </Suspense>
+              <Show when={session()}>
+                <pre class="font-mono text-sm leading-relaxed text-green-400">
+                  {JSON.stringify(session(), null, 2)}
+                </pre>
+              </Show>
             </div>
           </div>
         </div>

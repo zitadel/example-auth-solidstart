@@ -6,7 +6,6 @@ type HeaderProps = {
 };
 
 export function Header(props: HeaderProps) {
-  // <- Changed this line
   return (
     <header class="border-b border-gray-200 bg-white">
       <div class="mx-auto max-w-7xl px-6 py-4">

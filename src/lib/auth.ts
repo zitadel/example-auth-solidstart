@@ -387,4 +387,5 @@ export const authOptions: SolidAuthConfig = {
   },
 };
 
+// noinspection JSUnusedGlobalSymbols
 export const { GET, POST } = SolidAuth(authOptions);
