@@ -5,7 +5,8 @@ type HeaderProps = {
   isAuthenticated: boolean;
 };
 
-export function Header({ isAuthenticated }: HeaderProps) {
+export function Header(props: HeaderProps) {
+  // <- Changed this line
   return (
     <header class="border-b border-gray-200 bg-white">
       <div class="mx-auto max-w-7xl px-6 py-4">
@@ -22,7 +23,9 @@ export function Header({ isAuthenticated }: HeaderProps) {
               Demo Application
             </h1>
           </div>
-          <Show when={isAuthenticated}>
+          <Show when={props.isAuthenticated}>
+            {' '}
+            {/* <- And this line */}
             <SignOutButton />
           </Show>
         </div>
