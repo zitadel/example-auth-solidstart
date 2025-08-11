@@ -203,6 +203,7 @@ export const authOptions: SolidAuthConfig = {
     }),
   ],
 
+  basePath: '/api/auth',
   session: {
     strategy: 'jwt',
     maxAge: Number(process.env.SESSION_DURATION) || 3600,

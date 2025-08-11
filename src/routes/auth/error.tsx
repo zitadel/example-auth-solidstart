@@ -9,7 +9,7 @@ function AuthErrorContent() {
   const { heading, message } = getMessage(error(), 'auth-error');
 
   // noinspection HtmlUnknownTarget
-	return (
+  return (
     <main class="grid flex-1 place-items-center bg-white px-6 py-24 sm:py-32 lg:px-8">
       <div class="text-center">
         <div class="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-red-100">

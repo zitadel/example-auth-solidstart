@@ -1,20 +1,20 @@
-# SvelteKit with ZITADEL
+# SolidStart with ZITADEL
 
-[SvelteKit](https://kit.svelte.dev/) is a framework for building web applications of all sizes, with a beautiful development experience and flexible filesystem-based routing. In a modern setup, your SvelteKit application manages both your application's frontend and backend logic through server-side load functions and API routes.
+[SolidStart](https://start.solidjs.com/) is a full-stack web framework built on top of SolidJS that enables you to create performant web applications with a modern development experience. SolidStart provides both client-side and server-side capabilities through its meta-framework approach, offering file-based routing, server functions, and seamless hydration.
 
-To secure such an application, you need a reliable way to handle user logins. For the SvelteKit ecosystem, [Auth.js](https://authjs.dev/) (formerly NextAuth.js) is the standard and recommended library for authentication. Think of it as a flexible security guard for your app. This guide demonstrates how to use Auth.js with a SvelteKit application to implement a secure login with ZITADEL.
+To secure such an application, you need a reliable way to handle user logins. For the SolidStart ecosystem, [Auth.js for SolidStart](https://authjs.dev/getting-started/installation?framework=SolidStart) is the recommended library for authentication. Think of it as a flexible security guard for your app. This guide demonstrates how to use Auth.js with a SolidStart application to implement a secure login with ZITADEL.
 
 We'll be using the **OpenID Connect (OIDC)** protocol with the **Authorization Code Flow + PKCE**. This is the industry-best practice for security, ensuring that the login process is safe from start to finish. You can learn more in our [guide to OAuth 2.0 recommended flows](https://zitadel.com/docs/guides/integrate/login/oidc/oauth-recommended-flows).
 
-This example uses **Auth.js**, the standard for SvelteKit authentication. While ZITADEL doesn't offer a specific SDK, Auth.js is highly modular. It works with a "provider" that handles the communication with ZITADEL. Under the hood, this example uses the powerful OIDC standard to manage the secure PKCE flow.
+This example uses **Auth.js for SolidStart**, the standard for SolidStart authentication. While ZITADEL doesn't offer a specific SDK, Auth.js is highly modular. It works with a "provider" that handles the communication with ZITADEL. Under the hood, this example uses the powerful OIDC standard to manage the secure PKCE flow.
 
 Check out our Example Application to see it in action.
 
 ## Example Application
 
-The example repository includes a complete SvelteKit application, ready to run, that demonstrates how to integrate ZITADEL for user authentication.
+The example repository includes a complete SolidStart application, ready to run, that demonstrates how to integrate ZITADEL for user authentication.
 
-This example application showcases a typical web app authentication pattern: users start on a public landing page, click a login button to authenticate with ZITADEL, and are then redirected to a protected profile page displaying their user information. The app also includes secure logout functionality that clears the session and redirects users back to ZITADEL's logout endpoint. All protected routes are automatically secured using Auth.js hooks and session management, ensuring only authenticated users can access sensitive areas of your application.
+This example application showcases a typical web app authentication pattern: users start on a public landing page, click a login button to authenticate with ZITADEL, and are then redirected to a protected profile page displaying their user information. The app also includes secure logout functionality that clears the session and redirects users back to ZITADEL's logout endpoint. All protected routes are automatically secured using Auth.js middleware and session management, ensuring only authenticated users can access sensitive areas of your application.
 
 ### Prerequisites
 
@@ -32,16 +32,16 @@ You'll need a ZITADEL account and application configured. Follow the [ZITADEL do
 > **Important:** Configure the following URLs in your ZITADEL application settings:
 >
 > - **Redirect URIs:** Add `http://localhost:3000/auth/callback` (for development)
-> - **Post Logout Redirect URIs:** Add `http://localhost:3000/auth/logout/callback` (for development)
+> - **Post Logout Redirect URIs:** Add `http://localhost:3000/api/auth/logout/callback` (for development)
 >
-> These URLs must exactly match what your SvelteKit application uses. For production, add your production URLs.
+> These URLs must exactly match what your SolidStart application uses. For production, add your production URLs.
 
 ### Configuration
 
 To run the application, you first need to copy the `.env.example` file to a new file named `.env.local` and fill in your ZITADEL application credentials.
 
 ```dotenv
-# Port number where your SvelteKit server will listen for incoming HTTP requests.
+# Port number where your SolidStart server will listen for incoming HTTP requests.
 # Change this if port 3000 is already in use on your system.
 PORT=3000
 
@@ -66,7 +66,7 @@ ZITADEL_CLIENT_ID="your-client-id"
 
 # While the Authorization Code Flow with PKCE for public clients
 # does not strictly require a client secret for OIDC specification compliance,
-# AuthJS will still require a value for its internal configuration.
+# Auth.js will still require a value for its internal configuration.
 # Therefore, please provide a randomly generated string here.
 # You can generate a secure key using:
 # node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
@@ -78,7 +78,7 @@ ZITADEL_CALLBACK_URL="http://localhost:3000/auth/callback"
 
 # URL where users are redirected after logout. This should match a Post Logout
 # Redirect URI configured in your ZITADEL application settings.
-ZITADEL_POST_LOGOUT_URL="http://localhost:3000/auth/logout/callback"
+ZITADEL_POST_LOGOUT_URL="http://localhost:3000/api/auth/logout/callback"
 
 # Auth.js base URL for your application. In development, this is typically
 # http://localhost:3000. In production, use your actual domain.
@@ -91,9 +91,9 @@ Follow these steps to get the application running:
 
 ```bash
 # 1. Clone the repository
-git clone git@github.com:zitadel/example-auth-sveltekit.git
+git clone git@github.com:zitadel/example-auth-solidstart.git
 
-cd example-auth-sveltekit
+cd example-auth-solidstart
 
 # 2. Install the project dependencies
 npm install
@@ -124,29 +124,22 @@ Complete logout implementation that properly terminates both the local session a
 
 ## TODOs
 
-### 1. Security headers (SvelteKit built-in)
+### 1. Security headers (SolidStart built-in)
 
-**Partially enabled.** SvelteKit includes some security headers by default, but consider adding custom headers in `hooks.server.ts`:
+**Partially enabled.** SolidStart includes some security headers by default, but consider adding custom headers in `app.config.ts`:
 
 ```javascript
-import { handle as authHandle } from '$lib/auth';
-import { sequence } from '@sveltejs/kit/hooks';
+import { defineConfig } from '@solidjs/start/config';
 
-export const handle = sequence(authHandle, async ({ event, resolve }) => {
-  const response = await resolve(event);
-
-  response.headers.set('X-Frame-Options', 'DENY');
-  response.headers.set(
-    'Content-Security-Policy',
-    "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline';",
-  );
-  response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
-  response.headers.set(
-    'Permissions-Policy',
-    'geolocation=(), microphone=(), camera=()',
-  );
-
-  return response;
+export default defineConfig({
+  server: {
+    headers: {
+      'X-Frame-Options': 'DENY',
+      'Content-Security-Policy':
+        "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline';",
+      'Referrer-Policy': 'strict-origin-when-cross-origin',
+    },
+  },
 });
 ```
 
@@ -159,6 +152,6 @@ At minimum, configure:
 
 ## Resources
 
-- **SvelteKit Documentation:** <https://kit.svelte.dev/docs>
+- **SolidStart Documentation:** <https://start.solidjs.com/>
 - **Auth.js Documentation:** <https://authjs.dev/>
 - **ZITADEL Documentation:** <https://zitadel.com/docs>
