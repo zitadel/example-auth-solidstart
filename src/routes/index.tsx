@@ -1,5 +1,4 @@
 import { A } from '@solidjs/router';
-import Counter from '~/components/Counter';
 
 export default function Home() {
   return (
@@ -7,7 +6,6 @@ export default function Home() {
       <h1 class="max-6-xs my-16 text-6xl font-thin text-sky-700 uppercase">
         Hello world!
       </h1>
-      <Counter />
       <p class="mt-8">
         Visit{' '}
         <a
