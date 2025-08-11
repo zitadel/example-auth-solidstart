@@ -11,6 +11,7 @@ interface Props {
   showDetails?: boolean;
 }
 
+// noinspection JSUnusedGlobalSymbols
 /**
  * Error Boundary Component
  *
