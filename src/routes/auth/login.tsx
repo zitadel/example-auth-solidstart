@@ -1,6 +1,6 @@
 import { useSearchParams, A } from '@solidjs/router';
 import { Show, createSignal, onMount } from 'solid-js';
-import { getMessage } from '~/routes/auth/message';
+import { getMessage } from '~/lib/message.js';
 
 // noinspection JSUnusedGlobalSymbols
 /**

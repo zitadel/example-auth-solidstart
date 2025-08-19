@@ -1,6 +1,6 @@
 import { A, useSearchParams } from '@solidjs/router';
 import { Suspense } from 'solid-js';
-import { getMessage } from '~/routes/auth/message';
+import { getMessage } from '~/lib/message.js';
 
 function AuthErrorContent() {
   const [searchParams] = useSearchParams();
