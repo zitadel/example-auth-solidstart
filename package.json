@@ -3,6 +3,12 @@
   "private": true,
   "version": "0.0.1",
   "type": "module",
+  "overrides": {
+    "@auth/solid-start": {
+      "solid-start": "npm:@solidjs/start@^1.1.0",
+      "@solidjs/router": "$@solidjs/router"
+    }
+  },
   "scripts": {
     "dev": "vinxi dev",
     "build": "vinxi build",
