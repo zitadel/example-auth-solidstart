@@ -10,20 +10,17 @@ const testEnv = {
   ZITADEL_CLIENT_SECRET: 'test-client-secret',
   ZITADEL_CALLBACK_URL: 'http://localhost:3000/api/auth/callback',
   ZITADEL_POST_LOGOUT_URL: 'http://localhost:3000/api/auth/logout/callback',
-  AUTH_URL: 'http://localhost:3000',
-  PUBLIC_API_URL: 'http://localhost:3000',
 };
 
 // noinspection JSUnusedGlobalSymbols
 export default defineConfig({
   testDir: './test',
-  outputDir: './build/playwright',
+  outputDir: './build/test-results',
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 1 : undefined,
   reporter: [
-    ['html', { outputFolder: './build/playwright-report' }],
     ['list'],
     [
       'junit',

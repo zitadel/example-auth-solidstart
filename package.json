@@ -16,7 +16,8 @@
     "preview": "vite preview",
     "format": "prettier --write .",
     "lint": "prettier --check . && eslint .",
-    "prepack": "tsc --noEmit"
+    "prepack": "tsc --noEmit",
+    "test": "playwright test"
   },
   "dependencies": {
     "@auth/core": "^0.40.0",
