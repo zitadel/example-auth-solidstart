@@ -7,6 +7,12 @@ import globals from 'globals';
 export default [
   js.configs.recommended,
   {
+    files: ['**/*.js'],
+    languageOptions: {
+      globals: globals.node,
+    },
+  },
+  {
     files: ['**/*.{ts,tsx}'],
     ...solid,
     languageOptions: {
@@ -18,6 +24,20 @@ export default [
         ...globals.browser,
         ...globals.node,
       },
+    },
+    plugins: {
+      '@typescript-eslint': ts.plugin,
+    },
+    rules: {
+      'no-unused-vars': 'off',
+      '@typescript-eslint/no-unused-vars': [
+        'warn',
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+          ignoreRestSiblings: true,
+        },
+      ],
     },
   },
   prettier,
