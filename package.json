@@ -9,7 +9,8 @@
       "solid-start": "npm:@solidjs/start@^1.1.0",
       "@solidjs/router": "$@solidjs/router"
     },
-    "h3": "1.15.5"
+    "h3": "1.15.5",
+    "seroval": "1.4.2"
   },
   "scripts": {
     "dev": "vinxi dev",
