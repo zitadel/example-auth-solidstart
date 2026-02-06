@@ -13,9 +13,9 @@
     "seroval": "1.4.2"
   },
   "scripts": {
+    "start": "vinxi dev",
     "dev": "vinxi dev",
     "build": "vinxi build",
-    "start": "vinxi start",
     "preview": "vite preview",
     "format": "prettier --write .",
     "lint": "prettier --check . && eslint .",
