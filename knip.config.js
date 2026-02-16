@@ -8,5 +8,4 @@ module.exports = {
     'src/lib/**/*',
   ],
   ignore: ['app.config.timestamp_*.js'],
-  ignoreDependencies: ['tailwindcss'],
 };

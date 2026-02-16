@@ -5,6 +5,9 @@ import prettier from 'eslint-config-prettier';
 import globals from 'globals';
 
 export default [
+  {
+    ignores: ['.output/**', '.vinxi/**', 'dist/**', 'node_modules/**'],
+  },
   js.configs.recommended,
   {
     files: ['**/*.js'],

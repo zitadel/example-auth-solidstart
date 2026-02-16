@@ -1,10 +1,12 @@
 {
   "name": "example-solidstart-auth",
   "private": true,
+  "engines": {
+    "node": ">=22.0.0"
+  },
   "version": "0.0.1",
   "type": "module",
   "overrides": {
-    "vite": "$vite",
     "@auth/solid-start": {
       "solid-start": "npm:@solidjs/start@^1.1.0",
       "@solidjs/router": "$@solidjs/router"
@@ -35,7 +37,7 @@
     "@eslint/js": "^9.18.0",
     "@playwright/test": "^1.56.1",
     "@tailwindcss/vite": "^4.1.11",
-    "@types/node": "^20",
+    "@types/node": "^22",
     "eslint": "^9.33.0",
     "eslint-config-prettier": "^10.0.1",
     "eslint-plugin-solid": "^0.14.5",
