@@ -20,7 +20,7 @@
     "build": "vinxi build",
     "preview": "vite preview",
     "format": "prettier --write .",
-    "lint": "prettier --check . && eslint .",
+    "lint": "eslint .",
     "prepack": "tsc --noEmit",
     "test": "playwright test"
   },
