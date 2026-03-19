@@ -7,12 +7,7 @@
   "version": "0.0.1",
   "type": "module",
   "overrides": {
-    "@auth/solid-start": {
-      "solid-start": "npm:@solidjs/start@^1.1.0",
-      "@solidjs/router": "$@solidjs/router"
-    },
-    "h3": "1.15.5",
-    "seroval": "1.4.2",
+    "h3": "1.15.8",
     "serialize-javascript": "^7.0.3"
   },
   "scripts": {
