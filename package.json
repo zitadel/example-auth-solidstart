@@ -6,10 +6,6 @@
   },
   "version": "0.0.1",
   "type": "module",
-  "overrides": {
-    "h3": "1.15.9",
-    "serialize-javascript": "^7.0.3"
-  },
   "scripts": {
     "start": "vinxi dev",
     "dev": "vinxi dev",
