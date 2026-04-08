@@ -1,6 +1,6 @@
 import { redirect } from '@solidjs/router';
 import { APIEvent } from '@solidjs/start/server';
-import { getCookie } from 'vinxi/http';
+import { deleteCookie, getCookie, parseCookies, setHeader } from 'vinxi/http';
 
 // noinspection JSUnusedGlobalSymbols
 /**
@@ -13,7 +13,7 @@ import { getCookie } from 'vinxi/http';
  *
  * @param event - The incoming SolidStart API event object, which contains the
  * URL and its search parameters, including the `state` from the IdP.
- * @returns A Response object that either redirects the user to a success
+ * @returns A redirect response that either redirects the user to a success
  * or error page. Upon success, it includes headers to delete session cookies.
  */
 export async function GET(event: APIEvent) {
@@ -23,10 +23,16 @@ export async function GET(event: APIEvent) {
 
   if (state && logoutStateCookie && state === logoutStateCookie) {
     const successUrl = new URL('/logout/success', event.request.url);
-    const response = redirect(successUrl.toString());
-
-    response.headers.set('Clear-Site-Data', '"cookies"');
-    return response;
+    setHeader(event.nativeEvent, 'Clear-Site-Data', '"cookies"');
+    for (const name of Object.keys(parseCookies(event.nativeEvent))) {
+      if (name.includes('authjs.')) {
+        deleteCookie(event.nativeEvent, name, { path: '/' });
+      }
+    }
+    deleteCookie(event.nativeEvent, 'logout_state', {
+      path: '/api/auth/logout/callback',
+    });
+    return redirect(successUrl.toString());
   } else {
     const errorUrl = new URL('/logout/error', event.request.url);
     errorUrl.searchParams.set('reason', 'Invalid or missing state parameter.');
