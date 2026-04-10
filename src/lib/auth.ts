@@ -307,7 +307,10 @@ export const authOptions: SolidAuthConfig = {
      * @returns The URL to redirect the user to after successful login
      */
     async redirect({ baseUrl }) {
-      return `${baseUrl}/profile`;
+      const postLoginUrl = process.env.ZITADEL_POST_LOGIN_URL || '/profile';
+      return postLoginUrl.startsWith('http')
+        ? postLoginUrl
+        : `${baseUrl}${postLoginUrl}`;
     },
 
     /**
