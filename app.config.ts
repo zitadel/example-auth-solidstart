@@ -7,6 +7,7 @@ export default defineConfig({
     // @ts-ignore
     plugins: [tailwindcss()],
     server: {
+      port: Number(process.env.PORT) || 3000,
       headers: {
         'X-Frame-Options': 'DENY',
         'Content-Security-Policy':
