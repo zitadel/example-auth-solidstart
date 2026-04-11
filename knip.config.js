@@ -1,4 +1,5 @@
 module.exports = {
+  ignoreDependencies: ['@commitlint/config-conventional'],
   entry: [
     'src/entry-*',
     'src/app.tsx',
@@ -7,5 +8,5 @@ module.exports = {
     'src/components/**/*',
     'src/lib/**/*',
   ],
-  ignore: ['app.config.timestamp_*.js'],
+  ignore: ['commitlint.config.js', 'app.config.timestamp_*.js'],
 };
