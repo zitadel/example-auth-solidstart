@@ -54,7 +54,7 @@ function AuthErrorContent() {
 
 // noinspection JSUnusedGlobalSymbols
 /**
- * Custom NextAuth error page that matches the application's design system.
+ * Custom Auth.js error page that matches the application's design system.
  *
  * Displays user-friendly error messages for various authentication failures
  * including configuration errors, access denied, and verification failures.
