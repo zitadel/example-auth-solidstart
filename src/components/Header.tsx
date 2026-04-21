@@ -23,8 +23,6 @@ export function Header(props: HeaderProps) {
             </h1>
           </div>
           <Show when={props.isAuthenticated}>
-            {' '}
-            {/* <- And this line */}
             <SignOutButton />
           </Show>
         </div>
