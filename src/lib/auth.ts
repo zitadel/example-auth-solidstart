@@ -118,7 +118,7 @@ export async function buildLogoutUrl(
  * Extends Auth.js Session interface to include ZITADEL-specific tokens.
  *
  * This makes ZITADEL tokens available throughout your application via the
- * useSession() hook and getServerSession() function.
+ * getSession() function.
  */
 declare module '@auth/core/types' {
   // noinspection JSUnusedGlobalSymbols
@@ -322,8 +322,7 @@ export const authOptions: SolidAuthConfig = {
      * 3. **Automatic Refresh**: Calls refresh function when token expires
      *
      * ## When This Runs
-     * - Every time getServerSession() is called
-     * - Every time useSession() updates
+     * - Every time getSession() is called
      * - Before each authenticated API request
      *
      * ## Token Storage Strategy
@@ -362,7 +361,7 @@ export const authOptions: SolidAuthConfig = {
      * Shapes the session object that your application receives.
      *
      * This callback transforms the internal JWT token into the session object
-     * that your application code can access via useSession() or getServerSession().
+     * that your application code can access via getSession().
      *
      *
      * ## Security Note
