@@ -8,13 +8,15 @@
   "version": "0.0.1",
   "type": "module",
   "scripts": {
-    "start": "vinxi dev",
-    "dev": "vinxi dev",
     "build": "vinxi build",
-    "preview": "vite preview",
+    "dev": "vinxi dev",
     "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
     "prepack": "tsc --noEmit",
+    "preview": "vite preview",
+    "start": "vinxi dev",
     "test": "playwright test"
   },
   "dependencies": {
