@@ -92,9 +92,9 @@ Follow these steps to get the application running:
 
 ```bash
 # 1. Clone the repository
-git clone git@github.com:zitadel/example-solidstart-auth.git
+git clone git@github.com:zitadel/example-auth-solidstart.git
 
-cd example-solidstart-auth
+cd example-auth-solidstart
 
 # 2. Install the project dependencies
 npm install
