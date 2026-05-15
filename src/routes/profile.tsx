@@ -1,5 +1,5 @@
 import { createAsync, redirect, query } from '@solidjs/router';
-import { getSession } from '@auth/solid-start';
+import { getSession } from '@zitadel/solidstart-auth';
 import { authOptions } from '~/lib/auth';
 import { Header } from '~/components/Header';
 import { Footer } from '~/components/Footer';

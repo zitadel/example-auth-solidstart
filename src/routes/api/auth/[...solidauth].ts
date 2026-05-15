@@ -1,5 +1,5 @@
 import { authOptions } from '~/lib/auth';
-import { SolidAuth } from '@auth/solid-start';
+import { SolidAuth } from '@zitadel/solidstart-auth';
 import { RequestEvent } from 'solid-js/web';
 
 // noinspection JSUnusedGlobalSymbols

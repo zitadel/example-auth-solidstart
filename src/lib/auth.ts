@@ -1,4 +1,4 @@
-import { SolidAuth, type SolidAuthConfig } from '@auth/solid-start';
+import { SolidAuth, type SolidAuthConfig } from '@zitadel/solidstart-auth';
 import Zitadel from '@auth/core/providers/zitadel';
 import { randomUUID } from 'crypto';
 import * as oidc from 'openid-client';

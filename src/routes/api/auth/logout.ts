@@ -1,6 +1,6 @@
 import { redirect } from '@solidjs/router';
 import { APIEvent } from '@solidjs/start/server';
-import { getSession } from '@auth/solid-start';
+import { getSession } from '@zitadel/solidstart-auth';
 import { authOptions, buildLogoutUrl } from '~/lib/auth';
 import { setCookie } from 'vinxi/http';
 

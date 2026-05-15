@@ -1,4 +1,4 @@
-import { signIn } from '@auth/solid-start/client';
+import { signIn } from '@zitadel/solidstart-auth/client';
 import { Header } from '~/components/Header';
 import { Footer } from '~/components/Footer';
 

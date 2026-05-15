@@ -1,4 +1,4 @@
-import { getSession } from '@auth/solid-start';
+import { getSession } from '@zitadel/solidstart-auth';
 import { authOptions } from '~/lib/auth';
 import { APIEvent } from '@solidjs/start/server';
 
