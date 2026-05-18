@@ -1,5 +1,8 @@
 module.exports = {
-  ignoreDependencies: ['@commitlint/config-conventional'],
+  ignoreDependencies: [
+    '@commitlint/config-conventional',
+    '@zitadel/solidstart-auth',
+  ],
   entry: [
     'src/entry-*',
     'src/app.tsx',

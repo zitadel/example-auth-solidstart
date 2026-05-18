@@ -1,6 +1,5 @@
 import { createAsync, redirect, query } from '@solidjs/router';
-import { getSession } from '@zitadel/solidstart-auth';
-import { authOptions } from '~/lib/auth';
+import { getSession } from '~/lib/auth';
 import { Header } from '~/components/Header';
 import { Footer } from '~/components/Footer';
 import { Show } from 'solid-js';
@@ -11,7 +10,7 @@ const getSessionData = query(async function () {
   const event = getRequestEvent();
   if (!event) throw redirect('/api/auth/signin');
 
-  const session = await getSession(event.request, authOptions);
+  const session = await getSession(event.request);
   if (!session) {
     throw redirect('/api/auth/signin');
   }
@@ -24,7 +23,7 @@ export default function ProfilePage() {
   const session = createAsync(() => getSessionData());
 
   return (
-    <div class="flex min-h-screen flex-col bg-gray-50">
+    <>
       <Header isAuthenticated={true} />
       <main class="flex-1 px-6 py-12">
         <div class="mx-auto max-w-5xl">
@@ -215,6 +214,6 @@ export default function ProfilePage() {
         </div>
       </main>
       <Footer />
-    </div>
+    </>
   );
 }

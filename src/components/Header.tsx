@@ -5,6 +5,7 @@ type HeaderProps = {
   isAuthenticated: boolean;
 };
 
+// noinspection JSUnusedGlobalSymbols
 export function Header(props: HeaderProps) {
   return (
     <header class="border-b border-gray-200 bg-white">

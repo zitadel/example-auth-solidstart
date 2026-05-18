@@ -1,5 +1,4 @@
-import { getSession } from '@zitadel/solidstart-auth';
-import { authOptions } from '~/lib/auth';
+import { getSession } from '~/lib/auth';
 import { APIEvent } from '@solidjs/start/server';
 
 // noinspection JSUnusedGlobalSymbols
@@ -22,7 +21,7 @@ import { APIEvent } from '@solidjs/start/server';
  * Extended user profile with ZITADEL-specific claims like roles and metadata.
  */
 export async function GET(event: APIEvent): Promise<Response> {
-  const session = await getSession(event.request, authOptions);
+  const session = await getSession(event.request);
 
   if (!session?.accessToken) {
     return new Response(JSON.stringify({ error: 'Unauthorized' }), {

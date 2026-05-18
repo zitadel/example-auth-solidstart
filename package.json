@@ -15,16 +15,16 @@
     "lint:fix": "eslint . --fix",
     "depcheck": "npx knip",
     "prepack": "tsc --noEmit",
-    "preview": "vite preview",
+    "preview": "vinxi preview",
     "start": "vinxi dev",
     "test": "playwright test"
   },
   "dependencies": {
-    "@auth/core": "^0.40.0",
-    "@zitadel/solidstart-auth": "^0.1.0",
+    "@auth/core": "^0.41.0",
+    "@zitadel/solidstart-auth": "file:../solidstart-auth",
     "@solidjs/router": "^0.15.0",
     "@solidjs/start": "^1.1.0",
-    "openid-client": "^6.6.2",
+    "openid-client": "^6.6.3",
     "solid-js": "^1.9.5",
     "vinxi": "^0.5.7"
   },

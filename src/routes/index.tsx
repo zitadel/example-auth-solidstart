@@ -164,10 +164,11 @@ export default function Home() {
                 <div class="mt-8 text-center">
                   <p class="text-sm text-gray-500">
                     Powered by
-                    <span class="font-semibold text-gray-700"> Zitadel</span> •
+                    <span class="font-semibold text-gray-700">Zitadel</span> •
                     <a
                       href="https://zitadel.com/docs/guides/integrate/oauth-recommended-flows"
                       target="_blank"
+                      rel="noreferrer"
                       class="text-blue-600 hover:text-blue-700"
                     >
                       Learn more about PKCE
