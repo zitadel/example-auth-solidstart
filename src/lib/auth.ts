@@ -53,49 +53,50 @@ export async function buildLogoutUrl(
 }
 
 // noinspection JSUnusedGlobalSymbols
-export const { handlers, getSession, signIn, signOut } = SolidAuth({
-  providers: [
-    Zitadel({
-      issuer: process.env.ZITADEL_DOMAIN!,
-      clientId: process.env.ZITADEL_CLIENT_ID!,
-      clientSecret: process.env.ZITADEL_CLIENT_SECRET!,
-      authorization: { params: { scope: ZITADEL_SCOPES } },
-    }),
-  ],
-  session: {
-    strategy: 'jwt',
-    maxAge: Number(process.env.SESSION_DURATION) || 3600,
-  },
-  secret: process.env.SESSION_SECRET,
-  pages: { signIn: '/auth/login', error: '/auth/error' },
-  callbacks: {
-    async redirect({ baseUrl }) {
-      const postLoginUrl = process.env.ZITADEL_POST_LOGIN_URL || '/profile';
-      return postLoginUrl.startsWith('http')
-        ? postLoginUrl
-        : `${baseUrl}${postLoginUrl}`;
+export const { handlers, getSession, signIn, signInUrl, signOut, signOutUrl } =
+  SolidAuth({
+    providers: [
+      Zitadel({
+        issuer: process.env.ZITADEL_DOMAIN!,
+        clientId: process.env.ZITADEL_CLIENT_ID!,
+        clientSecret: process.env.ZITADEL_CLIENT_SECRET!,
+        authorization: { params: { scope: ZITADEL_SCOPES } },
+      }),
+    ],
+    session: {
+      strategy: 'jwt',
+      maxAge: Number(process.env.SESSION_DURATION) || 3600,
     },
-    async jwt({ token, account, user }) {
-      if (account && user) {
-        return {
-          ...token,
-          idToken: account.id_token,
-          accessToken: account.access_token,
-          refreshToken: account.refresh_token,
-          expiresAt: account.expires_at
-            ? account.expires_at * 1000
-            : Date.now() + 3600 * 1000,
-          error: undefined,
-        };
-      }
-      if (Date.now() < (token.expiresAt as number)) return token;
-      return refreshAccessToken(token);
+    secret: process.env.SESSION_SECRET,
+    pages: { signIn: '/auth/login', error: '/auth/error' },
+    callbacks: {
+      async redirect({ baseUrl }) {
+        const postLoginUrl = process.env.ZITADEL_POST_LOGIN_URL || '/profile';
+        return postLoginUrl.startsWith('http')
+          ? postLoginUrl
+          : `${baseUrl}${postLoginUrl}`;
+      },
+      async jwt({ token, account, user }) {
+        if (account && user) {
+          return {
+            ...token,
+            idToken: account.id_token,
+            accessToken: account.access_token,
+            refreshToken: account.refresh_token,
+            expiresAt: account.expires_at
+              ? account.expires_at * 1000
+              : Date.now() + 3600 * 1000,
+            error: undefined,
+          };
+        }
+        if (Date.now() < (token.expiresAt as number)) return token;
+        return refreshAccessToken(token);
+      },
+      async session({ session, token }) {
+        session.idToken = token.idToken;
+        session.accessToken = token.accessToken;
+        session.error = token.error;
+        return session;
+      },
     },
-    async session({ session, token }) {
-      session.idToken = token.idToken;
-      session.accessToken = token.accessToken;
-      session.error = token.error;
-      return session;
-    },
-  },
-});
+  });

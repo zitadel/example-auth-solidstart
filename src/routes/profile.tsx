@@ -1,5 +1,5 @@
 import { createAsync, redirect, query } from '@solidjs/router';
-import { getSession } from '~/lib/auth';
+import { getSession, signInUrl } from '~/lib/auth';
 import { Header } from '~/components/Header';
 import { Footer } from '~/components/Footer';
 import { Show } from 'solid-js';
@@ -8,11 +8,11 @@ import { getRequestEvent } from 'solid-js/web';
 const getSessionData = query(async function () {
   'use server';
   const event = getRequestEvent();
-  if (!event) throw redirect('/api/auth/signin');
+  if (!event) throw redirect(signInUrl({ redirectTo: '/profile' }));
 
   const session = await getSession(event.request);
   if (!session) {
-    throw redirect('/api/auth/signin');
+    throw redirect(signInUrl({ redirectTo: '/profile' }));
   }
 
   return session;
