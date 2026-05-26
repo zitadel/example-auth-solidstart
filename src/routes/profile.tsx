@@ -1,21 +1,20 @@
-import { createAsync, redirect, query } from '@solidjs/router';
-import { getSession, signInUrl } from '~/lib/auth';
+import { createAsync, query } from '@solidjs/router';
 import { Header } from '~/components/Header';
 import { Footer } from '~/components/Footer';
 import { Show } from 'solid-js';
 import { getRequestEvent } from 'solid-js/web';
 
+/**
+ * `src/middleware.ts` runs `getSession()` once per request and attaches
+ * the result to `event.locals.session`. By the time this query is
+ * called the middleware has either issued the redirect or populated
+ * locals — the query just reads back the cached value, avoiding a
+ * second round-trip to the Auth.js handler.
+ */
 const getSessionData = query(async function () {
   'use server';
   const event = getRequestEvent();
-  if (!event) throw redirect(signInUrl({ redirectTo: '/profile' }));
-
-  const session = await getSession(event.request);
-  if (!session) {
-    throw redirect(signInUrl({ redirectTo: '/profile' }));
-  }
-
-  return session;
+  return event?.locals.session ?? null;
 }, 'session-data');
 
 // noinspection JSUnusedGlobalSymbols

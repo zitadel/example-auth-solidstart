@@ -3,6 +3,7 @@ import tailwindcss from '@tailwindcss/vite';
 
 // noinspection JSUnusedGlobalSymbols
 export default defineConfig({
+  middleware: 'src/middleware.ts',
   vite: {
     // @ts-ignore
     plugins: [tailwindcss()],
