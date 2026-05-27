@@ -1,7 +1,6 @@
 module.exports = {
   ignoreDependencies: [
-    '@commitlint/config-conventional',
-    '@zitadel/solidstart-auth',
+    '@commitlint/config-conventional'
   ],
   entry: [
     'src/entry-*',
@@ -9,7 +8,7 @@ module.exports = {
     'app.config.*',
     'src/routes/**/*',
     'src/components/**/*',
-    'src/lib/**/*',
+    'src/lib/**/*'
   ],
   ignore: ['commitlint.config.js', 'app.config.timestamp_*.js'],
 };
