@@ -15,7 +15,7 @@ export default function CustomSignInPage() {
   const [csrfToken, setCsrfToken] = createSignal<string>('');
 
   const error = () => searchParams.error;
-  const callbackUrl = () => searchParams.callbackUrl;
+  const callbackUrl = () => searchParams.callbackUrl ?? '/profile';
 
   onMount(async () => {
     const [providersData, tokenData] = await Promise.all([
@@ -63,13 +63,11 @@ export default function CustomSignInPage() {
           <div class="mt-10">
             <form action={provider().signinUrl} method="post" class="space-y-4">
               <input type="hidden" name="csrfToken" value={csrfToken()} />
-              <Show when={callbackUrl()}>
-                <input
-                  type="hidden"
-                  name="callbackUrl"
-                  value={callbackUrl()!}
-                />
-              </Show>
+              <input
+                type="hidden"
+                name="callbackUrl"
+                value={callbackUrl() as string}
+              />
               <button
                 type="submit"
                 class="flex w-full items-center justify-center gap-3 rounded-lg bg-blue-600 px-4 py-3 font-semibold text-white transition duration-200 hover:bg-blue-700"
