@@ -1,3 +1,4 @@
+// noinspection JSUnusedGlobalSymbols
 export function Footer() {
   return (
     <footer class="border-t border-gray-200 bg-gray-100">

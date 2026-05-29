@@ -1,22 +1,20 @@
-import { createAsync, redirect, query } from '@solidjs/router';
-import { getSession } from '@auth/solid-start';
-import { authOptions } from '~/lib/auth';
+import { createAsync, query } from '@solidjs/router';
 import { Header } from '~/components/Header';
 import { Footer } from '~/components/Footer';
 import { Show } from 'solid-js';
 import { getRequestEvent } from 'solid-js/web';
 
+/**
+ * `src/middleware.ts` runs `getSession()` once per request and attaches
+ * the result to `event.locals.session`. By the time this query is
+ * called the middleware has either issued the redirect or populated
+ * locals — the query just reads back the cached value, avoiding a
+ * second round-trip to the Auth.js handler.
+ */
 const getSessionData = query(async function () {
   'use server';
   const event = getRequestEvent();
-  if (!event) throw redirect('/api/auth/signin');
-
-  const session = await getSession(event.request, authOptions);
-  if (!session) {
-    throw redirect('/api/auth/signin');
-  }
-
-  return session;
+  return event?.locals.session ?? null;
 }, 'session-data');
 
 // noinspection JSUnusedGlobalSymbols
@@ -24,7 +22,7 @@ export default function ProfilePage() {
   const session = createAsync(() => getSessionData());
 
   return (
-    <div class="flex min-h-screen flex-col bg-gray-50">
+    <>
       <Header isAuthenticated={true} />
       <main class="flex-1 px-6 py-12">
         <div class="mx-auto max-w-5xl">
@@ -215,6 +213,6 @@ export default function ProfilePage() {
         </div>
       </main>
       <Footer />
-    </div>
+    </>
   );
 }

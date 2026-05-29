@@ -1,5 +1,6 @@
 import type { Component } from 'solid-js';
 
+// noinspection JSUnusedGlobalSymbols
 export const SignOutButton: Component = () => (
   <form action="/api/auth/logout" method="post">
     <button

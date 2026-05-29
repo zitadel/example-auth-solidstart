@@ -1,7 +1,6 @@
 import { redirect } from '@solidjs/router';
 import { APIEvent } from '@solidjs/start/server';
-import { getSession } from '@auth/solid-start';
-import { authOptions, buildLogoutUrl } from '~/lib/auth';
+import { getSession, buildLogoutUrl } from '~/lib/auth';
 import { setCookie } from 'vinxi/http';
 
 // noinspection JSUnusedGlobalSymbols
@@ -19,7 +18,7 @@ import { setCookie } from 'vinxi/http';
  * that will be validated in the logout callback.
  */
 export async function POST(event: APIEvent) {
-  const session = await getSession(event.request, authOptions);
+  const session = await getSession(event.request);
 
   if (!session?.idToken) {
     return new Response(

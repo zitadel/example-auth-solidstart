@@ -1,4 +1,4 @@
-import { SolidAuth, type SolidAuthConfig } from '@auth/solid-start';
+import { SolidAuth } from '@zitadel/solidstart-auth';
 import Zitadel from '@auth/core/providers/zitadel';
 import { randomUUID } from 'crypto';
 import * as oidc from 'openid-client';
@@ -33,24 +33,18 @@ import { ZITADEL_SCOPES } from './scopes';
 async function refreshAccessToken(token: JWT): Promise<JWT> {
   if (!token.refreshToken) {
     console.error('No refresh token available for refresh');
-    return {
-      ...token,
-      error: 'RefreshAccessTokenError',
-    };
+    return { ...token, error: 'RefreshAccessTokenError' };
   }
-
   try {
     const config = await oidc.discovery(
       new URL(process.env.ZITADEL_DOMAIN!),
       process.env.ZITADEL_CLIENT_ID!,
       process.env.ZITADEL_CLIENT_SECRET,
     );
-
     const tokenEndpointResponse = await oidc.refreshTokenGrant(
       config,
       token.refreshToken as string,
     );
-
     return {
       ...token,
       accessToken: tokenEndpointResponse.access_token,
@@ -62,11 +56,7 @@ async function refreshAccessToken(token: JWT): Promise<JWT> {
     };
   } catch (error) {
     console.error('Token refresh failed:', error);
-
-    return {
-      ...token,
-      error: 'RefreshAccessTokenError',
-    };
+    return { ...token, error: 'RefreshAccessTokenError' };
   }
 }
 
@@ -102,292 +92,116 @@ export async function buildLogoutUrl(
     process.env.ZITADEL_CLIENT_ID!,
     process.env.ZITADEL_CLIENT_SECRET,
   );
-
   const state = randomUUID();
-
   const urlObj = oidc.buildEndSessionUrl(config, {
     id_token_hint: idToken,
     post_logout_redirect_uri: process.env.ZITADEL_POST_LOGOUT_URL!,
     state,
   });
-
   return { url: urlObj.toString(), state };
 }
 
-/**
- * Extends Auth.js Session interface to include ZITADEL-specific tokens.
- *
- * This makes ZITADEL tokens available throughout your application via the
- * getSession() function.
- */
-declare module '@auth/core/types' {
-  // noinspection JSUnusedGlobalSymbols
-  interface Session {
-    /** The OpenID Connect ID token from ZITADEL - used for logout and user identification */
-    idToken?: string;
-    /** The OAuth 2.0 access token - used for making authenticated API calls to ZITADEL */
-    accessToken?: string;
-    /** Error state indicating if token refresh failed - user needs to re-authenticate */
-    error?: string;
-  }
-}
-
-/**
- * Extends Auth.js JWT interface to store all necessary tokens and metadata.
- *
- * This internal interface stores tokens securely in the encrypted JWT that
- * Auth.js uses for session management.
- */
-declare module '@auth/core/jwt' {
-  // noinspection JSUnusedGlobalSymbols
-  interface JWT {
-    /** The OpenID Connect ID token from ZITADEL */
-    idToken?: string;
-    /** The OAuth 2.0 access token for making API calls */
-    accessToken?: string;
-    /** The OAuth 2.0 refresh token for getting new access tokens */
-    refreshToken?: string;
-    /** Unix timestamp (in milliseconds) when the access token expires */
-    expiresAt?: number;
-    /** Error flag set when token refresh fails */
-    error?: string;
-  }
-}
-
-/**
- * Complete Auth.js configuration for ZITADEL authentication with token refresh.
- *
- * This configuration implements the industry-standard OAuth 2.0 Authorization Code
- * Flow with PKCE (Proof Key for Code Exchange) for maximum security. It includes
- * automatic token refresh to maintain long-lived user sessions.
- *
- * ## OAuth Scopes
- *
- * Scopes are defined in `scopes.ts` as a simple array. To add/remove scopes,
- * just comment/uncomment lines in that file.
- *
- * ## Session Strategy: JWT vs Database
- *
- * This configuration uses JWT strategy because:
- * - **Stateless**: No database required for session storage
- * - **Scalable**: Works across multiple server instances
- * - **Fast**: No database queries for each request
- * - **Secure**: Tokens are encrypted and signed
- *
- * ## Token Lifecycle
- *
- * 1. **Initial Login**: User authenticates, receives access/refresh/ID tokens
- * 2. **Active Use**: Access token used for API calls (valid ~1 hour)
- * 3. **Token Expiry**: Access token expires, refresh token automatically gets a new one
- * 4. **Long-term**: Process repeats until the refresh token expires or the
- *    user logs out
- *
- * ## Callback Functions Explained
- *
- * Auth.js uses callback functions to customize the authentication flow:
- * - **redirect**: Controls where users go after login/logout
- * - **jwt**: Manages token storage and refresh logic
- * - **session**: Shapes what data is available to your app
- */
-export const authOptions: SolidAuthConfig = {
-  providers: [
-    Zitadel({
-      issuer: process.env.ZITADEL_DOMAIN!,
-      clientId: process.env.ZITADEL_CLIENT_ID!,
-      clientSecret: process.env.ZITADEL_CLIENT_SECRET!,
-      authorization: {
-        params: {
-          scope: ZITADEL_SCOPES,
-        },
-      },
-    }),
-  ],
-
-  basePath: '/api/auth',
-  session: {
-    strategy: 'jwt',
-    maxAge: Number(process.env.SESSION_DURATION) || 3600,
-  },
-
-  secret: process.env.SESSION_SECRET,
-
-  /**
-   * Custom page configurations for Auth.js
-   *
-   * Auth.js provides several built-in pages for authentication flows, but
-   * you can customize them to match your application's design and branding.
-   * This configuration overrides the default pages with custom implementations.
-   *
-   * ## Built-in Pages Available
-   *
-   * Auth.js includes default pages for common authentication scenarios:
-   * - Sign-in page: Shows available providers and handles authentication
-   * - Sign-out page: Confirmation page for signing out
-   * - Error page: Displays authentication errors with user-friendly messages
-   * - Email verification: For magic link authentication (not used with OAuth)
-   * - New user welcome: Onboarding page for first-time users
-   *
-   * @see https://authjs.dev/guides/pages/built-in-pages
-   *
-   * ## Custom Pages in This Application
-   *
-   * We've customized key pages to provide a consistent user experience that
-   * matches our application's design system and branding.
-   *
-   * ### Sign-in Page (`/auth/login`)
-   * - **Purpose**: Provides a branded sign-in experience for ZITADEL authentication
-   * - **Features**: Error message display, CSRF protection, callback URL handling
-   * - **Design**: Matches application's design system with consistent styling
-   * - **Preview**: Visit `/auth/login` or `/auth/login?error=AccessDenied`
-   *
-   * ### Error Page (`/auth/error`)
-   * - **Purpose**: Displays authentication errors with user-friendly messages
-   * - **Features**: Handles all Auth.js error types (Configuration, AccessDenied, etc.)
-   * - **Design**: Consistent error page styling with recovery options
-   * - **Preview**: Visit `/auth/error?error=Configuration` or `/auth/error?error=AccessDenied`
-   *
-   * ## Testing Custom Pages
-   *
-   * You can preview the custom pages by visiting these URLs:
-   *
-   * ```
-   * # Sign-in page with different error states
-   * http://<hostname>/auth/login
-   * http://<hostname>/auth/login?error=AccessDenied
-   * http://<hostname>/auth/login?error=Configuration
-   * http://<hostname>/auth/login?error=OAuthAccountNotLinked
-   *
-   * # Error page with different error types
-   * http://<hostname>/auth/error?error=Configuration
-   * http://<hostname>/auth/error?error=AccessDenied
-   * http://<hostname>/auth/error?error=Verification
-   * ```
-   *
-   * ## Fallback to Built-in Pages
-   *
-   * If you want to use Auth.js's default pages instead of the custom ones,
-   * simply comment out or remove the `pages` configuration:
-   *
-   * ```typescript
-   * // pages: {
-   * //   signIn: '/auth/login',
-   * //   error: '/auth/error',
-   * // },
-   * ```
-   *
-   * Auth.js will automatically use its built-in pages, which are functional
-   * but have basic styling and may not match your application's design.
-   *
-   * ## Available Page Options
-   *
-   * You can customize any of these Auth.js pages:
-   * - `signIn`: Custom sign-in page (default: `/api/auth/login`)
-   * - `signOut`: Custom sign-out confirmation page
-   * - `error`: Custom error page (default: `/api/auth/error`)
-   * - `verifyRequest`: Email verification page (for magic links)
-   * - `newUser`: New user welcome/onboarding page
-   *
-   * For this PKCE demo, we only customize the most commonly used pages
-   * (sign-in and error) since we use external OAuth authentication.
-   */
-  pages: {
-    signIn: '/auth/login',
-    error: '/auth/error',
-  },
-
-  callbacks: {
-    /**
-     * Controls where users are redirected after successful authentication.
-     *
-     * This callback runs after a user successfully signs in and determines
-     * their destination. By default, Auth.js would redirect to the page they
-     * came from, but this override ensures all users go to the profile page.
-     *
-     * @param baseUrl - Your application's base URL (e.g., https://yourdomain.com)
-     * @returns The URL to redirect the user to after successful login
-     */
-    async redirect({ baseUrl }) {
-      const postLoginUrl = process.env.ZITADEL_POST_LOGIN_URL || '/profile';
-      return postLoginUrl.startsWith('http')
-        ? postLoginUrl
-        : `${baseUrl}${postLoginUrl}`;
-    },
-
-    /**
-     * Manages JWT token lifecycle including storage and automatic refresh.
-     *
-     * This callback runs every time a JWT is accessed and handles:
-     * 1. **Initial Login**: Stores tokens from the authentication provider
-     * 2. **Token Expiry Check**: Determines if access token needs refreshing
-     * 3. **Automatic Refresh**: Calls refresh function when token expires
-     *
-     * ## When This Runs
-     * - Every time getSession() is called
-     * - Before each authenticated API request
-     *
-     * ## Token Storage Strategy
-     * - ID Token: Used for logout and user identification
-     * - Access Token: Used for API calls to ZITADEL
-     * - Refresh Token: Used to get new access tokens
-     * - Expiry Time: Used to determine when refresh is needed
-     *
-     * @param token - Current JWT token object
-     * @param account - Authentication provider data (only present on initial login)
-     * @param user - User object (only present on initial login)
-     * @returns Updated JWT token with fresh tokens or error state
-     */
-    async jwt({ token, account, user }) {
-      if (account && user) {
-        return {
-          ...token,
-          idToken: account.id_token,
-          accessToken: account.access_token,
-          refreshToken: account.refresh_token,
-          expiresAt: account.expires_at
-            ? account.expires_at * 1000
-            : Date.now() + 3600 * 1000,
-          error: undefined,
-        };
-      }
-
-      if (Date.now() < (token.expiresAt as number)) {
-        return token;
-      }
-
-      return refreshAccessToken(token);
-    },
-
-    /**
-     * Shapes the session object that your application receives.
-     *
-     * This callback transforms the internal JWT token into the session object
-     * that your application code can access via getSession().
-     *
-     *
-     * ## Security Note
-     *
-     * Only include data in the session that your frontend needs. Sensitive
-     * tokens like refresh tokens should NOT be exposed to the client.
-     *
-     *
-     *
-     * ## Available Data
-     * - **idToken**: For logout functionality
-     * - **accessToken**: For API calls (if needed on the client-side)
-     * - **error**: To handle token refresh failures
-     *
-     * @param session - The base session object from Auth.js
-     * @param token - The JWT token containing all stored data
-     * @returns The session object that your application will receive
-     */
-    async session({ session, token }) {
-      session.idToken = token.idToken;
-      session.accessToken = token.accessToken;
-      session.error = token.error;
-      return session;
-    },
-  },
-};
-
 // noinspection JSUnusedGlobalSymbols
-export const { GET, POST } = SolidAuth(authOptions);
+export const { handlers, getSession, signIn, signInUrl, signOut, signOutUrl } =
+  SolidAuth({
+    providers: [
+      Zitadel({
+        issuer: process.env.ZITADEL_DOMAIN!,
+        clientId: process.env.ZITADEL_CLIENT_ID!,
+        clientSecret: process.env.ZITADEL_CLIENT_SECRET!,
+        authorization: { params: { scope: ZITADEL_SCOPES } },
+      }),
+    ],
+    session: {
+      strategy: 'jwt',
+      maxAge: Number(process.env.SESSION_DURATION) || 3600,
+    },
+    secret: process.env.SESSION_SECRET,
+    pages: { signIn: '/auth/login', error: '/auth/error' },
+    callbacks: {
+      /**
+       * Controls where users are redirected after successful authentication.
+       *
+       * This callback runs after a user successfully signs in and determines
+       * their destination. By default, Auth.js would redirect to the page they
+       * came from, but this override ensures all users go to the profile page.
+       *
+       * @param baseUrl - Your application's base URL (e.g., https://yourdomain.com)
+       * @returns The URL to redirect the user to after successful login
+       */
+      async redirect({ baseUrl }) {
+        const postLoginUrl = process.env.ZITADEL_POST_LOGIN_URL || '/profile';
+        return postLoginUrl.startsWith('http')
+          ? postLoginUrl
+          : `${baseUrl}${postLoginUrl}`;
+      },
+      /**
+       * Manages JWT token lifecycle including storage and automatic refresh.
+       *
+       * This callback runs every time a JWT is accessed and handles:
+       * 1. **Initial Login**: Stores tokens from the authentication provider
+       * 2. **Token Expiry Check**: Determines if access token needs refreshing
+       * 3. **Automatic Refresh**: Calls refresh function when token expires
+       *
+       * ## When This Runs
+       * - Every time getSession() is called
+       * - Before each authenticated API request
+       *
+       * ## Token Storage Strategy
+       * - ID Token: Used for logout and user identification
+       * - Access Token: Used for API calls to ZITADEL
+       * - Refresh Token: Used to get new access tokens
+       * - Expiry Time: Used to determine when refresh is needed
+       *
+       * @param token - Current JWT token object
+       * @param account - Authentication provider data (only present on initial login)
+       * @param user - User object (only present on initial login)
+       * @returns Updated JWT token with fresh tokens or error state
+       */
+      async jwt({ token, account, user }) {
+        if (account && user) {
+          return {
+            ...token,
+            idToken: account.id_token,
+            accessToken: account.access_token,
+            refreshToken: account.refresh_token,
+            expiresAt: account.expires_at
+              ? account.expires_at * 1000
+              : Date.now() + 3600 * 1000,
+            error: undefined,
+          };
+        }
+        if (Date.now() < (token.expiresAt as number)) return token;
+        return refreshAccessToken(token);
+      },
+      /**
+       * Shapes the session object that your application receives.
+       *
+       * This callback transforms the internal JWT token into the session object
+       * that your application code can access via getSession().
+       *
+       *
+       * ## Security Note
+       *
+       * Only include data in the session that your frontend needs. Sensitive
+       * tokens like refresh tokens should NOT be exposed to the client.
+       *
+       *
+       *
+       * ## Available Data
+       * - **idToken**: For logout functionality
+       * - **accessToken**: For API calls (if needed on the client-side)
+       * - **error**: To handle token refresh failures
+       *
+       * @param session - The base session object from Auth.js
+       * @param token - The JWT token containing all stored data
+       * @returns The session object that your application will receive
+       */
+      async session({ session, token }) {
+        session.idToken = token.idToken;
+        session.accessToken = token.accessToken;
+        session.error = token.error;
+        return session;
+      },
+    },
+  });
