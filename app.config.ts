@@ -5,7 +5,6 @@ import tailwindcss from '@tailwindcss/vite';
 export default defineConfig({
   middleware: 'src/middleware.ts',
   vite: {
-    // @ts-ignore
     plugins: [tailwindcss()],
     server: {
       port: Number(process.env.PORT) || 3000,

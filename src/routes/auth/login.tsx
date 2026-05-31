@@ -2,6 +2,8 @@ import { useSearchParams, A } from '@solidjs/router';
 import { Show, createSignal, onMount } from 'solid-js';
 import { getMessage } from '~/lib/message.js';
 
+type AuthProviders = Record<string, { signinUrl: string; name: string }>;
+
 // noinspection JSUnusedGlobalSymbols
 /**
  * Custom Auth.js sign-in page that matches the application's design system.
@@ -11,7 +13,7 @@ import { getMessage } from '~/lib/message.js';
  */
 export default function CustomSignInPage() {
   const [searchParams] = useSearchParams();
-  const [providers, setProviders] = createSignal<any>(null);
+  const [providers, setProviders] = createSignal<AuthProviders | null>(null);
   const [csrfToken, setCsrfToken] = createSignal<string>('');
 
   const error = () => searchParams.error;
@@ -61,7 +63,11 @@ export default function CustomSignInPage() {
 
         <Show when={provider()}>
           <div class="mt-10">
-            <form action={provider().signinUrl} method="post" class="space-y-4">
+            <form
+              action={provider()!.signinUrl}
+              method="post"
+              class="space-y-4"
+            >
               <input type="hidden" name="csrfToken" value={csrfToken()} />
               <input
                 type="hidden"
@@ -79,7 +85,7 @@ export default function CustomSignInPage() {
                     clip-rule="evenodd"
                   />
                 </svg>
-                Sign in with {provider().name}
+                Sign in with {provider()!.name}
               </button>
             </form>
           </div>
