@@ -63,7 +63,11 @@ export default function CustomSignInPage() {
 
         <Show when={provider()}>
           <div class="mt-10">
-            <form action={provider().signinUrl} method="post" class="space-y-4">
+            <form
+              action={provider()!.signinUrl}
+              method="post"
+              class="space-y-4"
+            >
               <input type="hidden" name="csrfToken" value={csrfToken()} />
               <input
                 type="hidden"
@@ -81,7 +85,7 @@ export default function CustomSignInPage() {
                     clip-rule="evenodd"
                   />
                 </svg>
-                Sign in with {provider().name}
+                Sign in with {provider()!.name}
               </button>
             </form>
           </div>
