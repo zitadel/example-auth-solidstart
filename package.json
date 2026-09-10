@@ -20,7 +20,7 @@
     "test": "playwright test"
   },
   "dependencies": {
-    "@auth/core": "^0.40.0",
+    "@auth/core": "^0.41.3",
     "@solidjs/router": "^0.15.0",
     "@solidjs/start": "^1.1.0",
     "@zitadel/solidstart-auth": "^1.1.2",
